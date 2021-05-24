@@ -28,7 +28,7 @@ void addGoods::on_pushButton_clicked()
     std::string ng_name,ng_desc,ng_type_s;
     goods_type_t ng_type;
     double ng_price;
-    int64_t ng_remain;
+    uint64_t ng_remain;
     ng_name = ui->nameLine->text().toStdString();
     if(goods_list[std::pair(ng_name,current_user->getUserId())]!=nullptr) {
         QMessageBox* msg;
@@ -37,12 +37,12 @@ void addGoods::on_pushButton_clicked()
     } else {
         bool success1,success2;
         ng_price = ui->priceLine->text().toDouble(&success1);
-        ng_remain = ui->remainLine->text().toLongLong(&success2);
-        if(!success1) {
+        ng_remain = ui->remainLine->text().toULongLong(&success2);
+        if(!success1||ng_price<0) {
             QMessageBox* msg;
             msg = new QMessageBox(QMessageBox::Critical,"错误","输入的价格不合法",QMessageBox::Ok|QMessageBox::Default);
             msg->show();
-        } else if(!success2) {
+        } else if(!success2||ng_remain<0) {
             QMessageBox* msg;
             msg = new QMessageBox(QMessageBox::Critical,"错误","输入的余量不合法",QMessageBox::Ok|QMessageBox::Default);
             msg->show();
@@ -58,4 +58,8 @@ void addGoods::on_pushButton_clicked()
             emit sendOk();
         }
     }
+}
+
+void addGoods::closeWindow() {
+    this->close();
 }

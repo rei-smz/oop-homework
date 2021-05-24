@@ -9,6 +9,7 @@ account::account(QWidget *parent) :
     ui(new Ui::account)
 {
     ui->setupUi(this);
+    connect(ui->passLine,SIGNAL(returnPressed()),ui->pushButton,SIGNAL(clicked()),Qt::UniqueConnection);
 }
 
 account::~account()
@@ -77,6 +78,7 @@ void account::on_pushButton_2_clicked()
             break;
     }
     user_list[t_name]=nu;
+    id_to_user[uid]=nu;
     current_user=nu;
     changeUserToJson(nu);
     writeUserConfig();

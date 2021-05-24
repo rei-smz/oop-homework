@@ -5,13 +5,13 @@
 #include <QDebug>
 #include <QApplication>
 
-nlohmann::json user_json_list=nlohmann::json::array();
+nlohmann::json user_json_list;
 std::vector<std::pair<std::string,uint64_t>> goods_name;
 std::unordered_map<std::pair<std::string,uint64_t>,Goods*,hash_pair> goods_list;
 std::unordered_map<std::string,User*> user_list;
 std::unordered_map<uint64_t,User*> id_to_user;
 User* current_user=nullptr;
-int64_t id;
+int64_t id; //数据库中商品最大的编号
 QSqlDatabase db;
 QSqlQuery query;
 std::unordered_map<std::string,goods_type_t> type_map;
@@ -24,7 +24,7 @@ int main(int argc, char *argv[])
 
     /*打开数据库*/
     db=QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("../../../goods.db");
+    db.setDatabaseName("goods.db");
     query=QSqlQuery(db);
     if(!db.open()) {
         exit(1);
@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
 
     user_count=0;
     goods_count=0;
+    user_json_list["Merchant"]=nlohmann::json::array();
+    user_json_list["Customer"]=nlohmann::json::array();
 
     /*读取用户信息*/
     readUserConfig();
@@ -53,10 +55,6 @@ int main(int argc, char *argv[])
         id=0;
     }
 
-    discount[food]=0;
-    discount[cloths]=0;
-    discount[book]=0;
-    discount[electronic]=0;
     type_map["食品"]=food;
     type_map["服装"]=cloths;
     type_map["书籍"]=book;

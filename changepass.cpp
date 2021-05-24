@@ -38,9 +38,16 @@ void changepass::on_pushButton_2_clicked()
         msg->show();
     } else {
         current_user->changePassword(old_pass,new_pass);
-        for(auto& u_obj:user_json_list) {
-            if(u_obj["name"]==current_user->getUserName()) {
+        std::string type_s;
+        if(current_user->getUserType() == merchant) {
+            type_s = "Merchant";
+        } else {
+            type_s = "Customer";
+        }
+        for(auto& u_obj:user_json_list[type_s]) {
+            if(u_obj["uid"]==current_user->getUserId()) {
                 u_obj["password"]=current_user->getUserPass();
+                break;
             }
         }
         writeUserConfig();
@@ -50,4 +57,8 @@ void changepass::on_pushButton_2_clicked()
         this->close();
     }
 
+}
+
+void changepass::closeWindow() {
+    this->close();
 }

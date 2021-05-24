@@ -15,6 +15,7 @@ include(conanbuildinfo.pri)
 SOURCES += \
     account.cpp \
     addgoods.cpp \
+    cartwindow.cpp \
     changepass.cpp \
     db.cpp \
     main.cpp \
@@ -27,6 +28,7 @@ SOURCES += \
 HEADERS += \
     account.h \
     addgoods.h \
+    cartwindow.h \
     changepass.h \
     mainwindow.h \
     file_io.h \
@@ -38,6 +40,7 @@ HEADERS += \
 FORMS += \
     account.ui \
     addgoods.ui \
+    cartwindow.ui \
     changepass.ui \
     mainwindow.ui \
     managegoods.ui \

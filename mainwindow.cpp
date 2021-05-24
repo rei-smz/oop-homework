@@ -6,8 +6,10 @@
 #include "addgoods.h"
 #include "managegoods.h"
 #include "management.h"
+#include "cartwindow.h"
 #include <QTableWidget>
 #include <QTableWidgetItem>
+#include <QMessageBox>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -38,6 +40,7 @@ void MainWindow::on_xiugaimima_triggered()
     //打开修改密码窗口
     changepass* chg_pass_window;
     chg_pass_window = new changepass;
+    connect(this,SIGNAL(sendAccountChanged()),chg_pass_window,SLOT(closeWindow()));
     chg_pass_window->show();
 }
 
@@ -45,6 +48,7 @@ void MainWindow::on_actiontuichu_triggered()
 {
     //退出登录
     current_user = nullptr;
+    emit sendAccountChanged();
     refresh_user();
 }
 
@@ -118,18 +122,27 @@ void MainWindow::refresh_user()
         ui->actionmanage->setEnabled(false);
         ui->actionrecharge->setEnabled(false);
         ui->actioncart->setEnabled(false);
+        ui->addCartButton->setEnabled(false);
+        ui->amountLine->setEnabled(false);
         ui->balanceLabel->setText("");
     } else {
         ui->currentUserLabel->setText(QString("当前用户：")+QString::fromStdString(current_user->getUserName()));
         ui->xiugaimima->setEnabled(true);
         ui->actiontuichu->setEnabled(true);
         ui->actionrecharge->setEnabled(true);
-        ui->balanceLabel->setText(QString("账户余额：%1元").arg(current_user->getBalance()));
+        ui->balanceLabel->setText(QString("账户余额：%1元").arg(current_user->getBalance(),0,'g',20));
         if(current_user->getUserType()==merchant) {
             ui->actionaddGoods->setEnabled(true);
             ui->actionmanage->setEnabled(true);
+            ui->actioncart->setEnabled(false);
+            ui->addCartButton->setEnabled(false);
+            ui->amountLine->setEnabled(false);
         } else {
             ui->actioncart->setEnabled(true);
+            ui->addCartButton->setEnabled(true);
+            ui->amountLine->setEnabled(true);
+            ui->actionaddGoods->setEnabled(false);
+            ui->actionmanage->setEnabled(false);
         }
     }
 }
@@ -139,6 +152,7 @@ void MainWindow::on_actionrecharge_triggered()
     recharge_w* rchg_window;
     rchg_window = new recharge_w;
     connect(rchg_window,SIGNAL(sendOk()),this,SLOT(refresh_user()));
+    connect(this,SIGNAL(sendAccountChanged()),rchg_window,SLOT(closeWindow()));
     rchg_window->show();
 }
 
@@ -147,6 +161,7 @@ void MainWindow::on_actionaddGoods_triggered()
     addGoods* ag_window;
     ag_window = new addGoods;
     connect(ag_window,SIGNAL(sendOk()),this,SLOT(append_goods()));
+    connect(this,SIGNAL(sendAccountChanged()),ag_window,SLOT(closeWindow()));
     ag_window->show();
 }
 
@@ -155,6 +170,7 @@ void MainWindow::on_actionmanage_triggered()
     manageGoods* mg_window;
     mg_window = new manageGoods;
     connect(mg_window,SIGNAL(sendOk()),this,SLOT(refresh_goods()));
+    connect(this,SIGNAL(sendAccountChanged()),mg_window,SLOT(closeWindow()));
     mg_window->show();
 }
 
@@ -174,4 +190,44 @@ void MainWindow::on_pushButton_clicked()
             }
         }
     }
+}
+
+void MainWindow::on_addCartButton_clicked()
+{
+    int64_t row_index = ui->tableWidget->currentRow();
+    if(row_index == -1) {
+        QMessageBox* msg;
+        msg = new QMessageBox(QMessageBox::Critical,"错误","未选中商品",QMessageBox::Ok|QMessageBox::Default);
+        msg->show();
+        return;
+    }
+    bool amount_ok;
+    uint64_t amount = ui->amountLine->text().toULongLong(&amount_ok);
+    if(!amount_ok||amount<=0) {
+        QMessageBox* msg;
+        msg = new QMessageBox(QMessageBox::Critical,"错误","输入的数量不合法",QMessageBox::Ok|QMessageBox::Default);
+        msg->show();
+        return;
+    }
+    cartObj item;
+    item.pnu=std::pair<std::string,uint64_t>(ui->tableWidget->item(row_index,0)->text().toStdString(),user_list[ui->tableWidget->item(row_index,5)->text().toStdString()]->getUserId());
+    item.amount=amount;
+    current_user->addCart(item);
+    refreshUserJson(current_user);
+    emit sendAddCartOk();
+    ui->tableWidget->setCurrentItem(NULL);
+    QMessageBox* msg;
+    msg = new QMessageBox(QMessageBox::Information,"成功","加入购物车成功",QMessageBox::Ok|QMessageBox::Default);
+    msg->show();
+}
+
+void MainWindow::on_actioncart_triggered()
+{
+    cartWindow* cart_window;
+    cart_window = new cartWindow;
+    connect(this,SIGNAL(sendAddCartOk()),cart_window,SLOT(refresh_cart()));
+    connect(this,SIGNAL(sendAccountChanged()),cart_window,SLOT(closeWindow()));
+    connect(cart_window,SIGNAL(sendPayOk()),this,SLOT(refresh_goods()));
+    connect(cart_window,SIGNAL(sendPayOk()),this,SLOT(refresh_user()));
+    cart_window->show();
 }

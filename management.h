@@ -14,8 +14,11 @@
 enum user_type_t {merchant=0,customer=1};
 enum goods_type_t {food=0,cloths=1,book=2,electronic=3} ;
 
-extern std::unordered_map<goods_type_t,double> discount;
 
+typedef struct cartObj {
+    std::pair<std::string,uint64_t> pnu;
+    uint64_t amount;
+}cartObj ;
 
 class Goods {
 protected:
@@ -23,50 +26,57 @@ protected:
     double origin_price;
     std::string goods_name;
     std::string description;
-    int64_t remain;
+    uint64_t remain;
+    uint64_t belong_to;
 public:
     virtual double getPrice()=0;
-    inline virtual goods_type_t getType() {
+    inline goods_type_t getType() {
         return goods_type;
     }
-    inline virtual std::string getName() {
+    inline std::string getName() {
         return goods_name;
     }
-    inline virtual std::string getDesc() {
+    inline std::string getDesc() {
         return description;
     }
-    inline virtual int64_t getRemain() {
+    inline uint64_t getRemain() {
         return remain;
     }
-    inline virtual void changeOriginPrice(double new_price) {
+    inline void changeOriginPrice(double new_price) {
         origin_price=new_price;
     }
-    inline virtual void changeRemain(int64_t new_remain) {
+    inline void changeRemain(int64_t new_remain) {
         remain=new_remain;
+    }
+    inline uint64_t getBelong() {
+        return belong_to;
+    }
+    inline double getOriginPrice() {
+        return origin_price;
     }
 };
 
 class Food: public Goods {
 public:
-    Food(double price,const std::string& name,const std::string& desc,int64_t number);
+    Food(double price,const std::string& name,const std::string& desc,uint64_t number,uint64_t belong);
     double getPrice() override;
 };
 
 class Cloths: public Goods {
 public:
-    Cloths(double price,const std::string& name,const std::string& desc,int64_t number);
+    Cloths(double price,const std::string& name,const std::string& desc,uint64_t number,uint64_t belong);
     double getPrice() override;
 };
 
 class Book: public Goods {
 public:
-    Book(double price,const std::string& name,const std::string& desc,int64_t number);
+    Book(double price,const std::string& name,const std::string& desc,uint64_t number,uint64_t belong);
     double getPrice() override;
 };
 
 class Electronic: public Goods {
 public:
-    Electronic(double price,const std::string& name,const std::string& desc,int64_t number);
+    Electronic(double price,const std::string& name,const std::string& desc,uint64_t number,uint64_t belong);
     double getPrice() override;
 };
 
@@ -83,22 +93,28 @@ public:
     virtual void manageGoods(const std::string& name,double price,int64_t remain)=0;
     virtual void manageDiscount(goods_type_t type,double off)=0;
     virtual void deleteGoods(const std::string& name)=0;
-    virtual void recharge(double money);
-    virtual double getBalance();
-    virtual void pay(double money);
-    virtual void changePassword(const std::string& old_pass,const std::string& new_pass);
-    inline virtual std::string getUserName() {
+    virtual std::vector<cartObj> getCart()=0;
+    virtual void addCart(cartObj item)=0;
+    virtual void delCart(cartObj item)=0;
+    virtual void changeCart(cartObj item)=0;
+    virtual double getDiscount(goods_type_t type)=0;
+    virtual void recharge(double money)=0;
+    double getBalance();
+    virtual void pay(double money)=0;
+    void changePassword(const std::string& old_pass,const std::string& new_pass);
+    inline std::string getUserName() {
         return username;
     }
-    inline virtual std::string getUserPass() {
+    inline std::string getUserPass() {
         return password;
     }
-    inline virtual uint64_t getUserId() {
+    inline uint64_t getUserId() {
         return user_id;
     }
 };
 
 class Merchant: public User {
+    std::unordered_map<goods_type_t,double> discount;
 public:
     Merchant(uint64_t id,const std::string& user,const std::string& pass,double balance);
     user_type_t getUserType() override;
@@ -106,9 +122,28 @@ public:
     void manageGoods(const std::string& name,double price,int64_t remain) final;
     void manageDiscount(goods_type_t type,double off) final;
     void deleteGoods(const std::string& name) final;
+    void recharge(double money) final;
+    void pay(double money) final;
+    inline std::vector<cartObj> getCart() final {
+        std::cout<<"用户不为消费者"<<std::endl;
+        return {};
+    }
+    inline void addCart(cartObj) final {
+        std::cout<<"用户不为消费者"<<std::endl;
+    }
+    inline void delCart(cartObj) final {
+        std::cout<<"用户不为消费者"<<std::endl;
+    }
+    inline void changeCart(cartObj) final {
+        std::cout<<"用户不为消费者"<<std::endl;
+    }
+    inline double getDiscount(goods_type_t type) final {
+        return discount[type];
+    }
 };
 
 class Customer: public User {
+    std::vector<cartObj> cart;
 public:
     Customer(uint64_t id,const std::string& user,const std::string& pass,double balance);
     user_type_t getUserType() override;
@@ -116,6 +151,18 @@ public:
     void manageGoods(const std::string& name,double price,int64_t remain) final;
     void manageDiscount(goods_type_t type,double off) final;
     void deleteGoods(const std::string& name) final;
+    inline std::vector<cartObj> getCart() final {
+        return cart;
+    }
+    void recharge(double money) final;
+    void addCart(cartObj item) final;
+    void delCart(cartObj item) final;
+    void changeCart(cartObj item) final;
+    void pay(double money) final;
+    inline double getDiscount(goods_type_t) final {
+        std::cout<<"用户不为商家"<<std::endl;
+        return -1;
+    }
 };
 
 struct hash_pair {
@@ -138,4 +185,5 @@ extern std::unordered_map<std::string,goods_type_t> type_map;
 extern uint64_t goods_count,user_count;
 
 void changeUserToJson(User* u);
+void refreshUserJson(User* u);
 #endif

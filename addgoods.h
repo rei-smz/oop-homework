@@ -21,6 +21,8 @@ signals:
 private slots:
     void on_pushButton_clicked();
 
+    void closeWindow();
+
 private:
     Ui::addGoods *ui;
 };

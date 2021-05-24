@@ -19,6 +19,8 @@ signals:
 private slots:
     void on_rechargeButton_clicked();
 
+    void closeWindow();
+
 private:
     Ui::recharge_w *ui;
 };

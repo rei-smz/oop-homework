@@ -1,4 +1,4 @@
-CONAN_INCLUDEPATH += "/Users/rin/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include"
+CONAN_INCLUDEPATH += "C:/Users/lzlzq/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include"
 CONAN_LIBS += 
 CONAN_SYSTEMLIBS += 
 CONAN_FRAMEWORKS += 
@@ -6,14 +6,14 @@ CONAN_FRAMEWORK_PATHS +=
 CONAN_LIBDIRS += 
 CONAN_BINDIRS += 
 CONAN_RESDIRS += 
-CONAN_BUILDDIRS += "/Users/rin/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/"
+CONAN_BUILDDIRS += "C:/Users/lzlzq/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/"
 CONAN_DEFINES += 
 CONAN_QMAKE_CXXFLAGS += 
 CONAN_QMAKE_CFLAGS += 
 CONAN_QMAKE_LFLAGS += 
 CONAN_QMAKE_LFLAGS += 
 
-CONAN_INCLUDEPATH_NLOHMANN_JSON += "/Users/rin/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include"
+CONAN_INCLUDEPATH_NLOHMANN_JSON += "C:/Users/lzlzq/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/include"
 CONAN_LIBS_NLOHMANN_JSON += 
 CONAN_SYSTEMLIBS_NLOHMANN_JSON += 
 CONAN_FRAMEWORKS_NLOHMANN_JSON += 
@@ -21,13 +21,13 @@ CONAN_FRAMEWORK_PATHS_NLOHMANN_JSON +=
 CONAN_LIBDIRS_NLOHMANN_JSON += 
 CONAN_BINDIRS_NLOHMANN_JSON += 
 CONAN_RESDIRS_NLOHMANN_JSON += 
-CONAN_BUILDDIRS_NLOHMANN_JSON += "/Users/rin/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/"
+CONAN_BUILDDIRS_NLOHMANN_JSON += "C:/Users/lzlzq/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9/"
 CONAN_DEFINES_NLOHMANN_JSON += 
 CONAN_QMAKE_CXXFLAGS_NLOHMANN_JSON += 
 CONAN_QMAKE_CFLAGS_NLOHMANN_JSON += 
 CONAN_QMAKE_LFLAGS_NLOHMANN_JSON += 
 CONAN_QMAKE_LFLAGS_NLOHMANN_JSON += 
-CONAN_NLOHMANN_JSON_ROOT = "/Users/rin/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
+CONAN_NLOHMANN_JSON_ROOT = "C:/Users/lzlzq/.conan/data/nlohmann_json/3.9.1/_/_/package/5ab84d6acfe1f23c4fae0ab88f26e3a396351ac9"
 
 CONFIG(conan_basic_setup) {
     INCLUDEPATH += $$CONAN_INCLUDEPATH

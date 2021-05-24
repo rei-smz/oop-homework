@@ -15,6 +15,10 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+signals:
+    void sendAddCartOk();
+    void sendAccountChanged();
+
 private slots:
     void on_dengluzhuce_triggered();
 
@@ -35,6 +39,10 @@ private slots:
     void on_actionmanage_triggered();
 
     void on_pushButton_clicked();
+
+    void on_addCartButton_clicked();
+
+    void on_actioncart_triggered();
 
 private:
     Ui::MainWindow *ui;

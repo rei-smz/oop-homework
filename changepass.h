@@ -18,6 +18,8 @@ public:
 private slots:
     void on_pushButton_2_clicked();
 
+    void closeWindow();
+
 private:
     Ui::changepass *ui;
 };
