@@ -27,6 +27,8 @@ private slots:
 
     void closeWindow();
 
+    void on_changeButton_clicked();
+
 private:
     Ui::cartWindow *ui;
 };

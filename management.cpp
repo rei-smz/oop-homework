@@ -301,7 +301,6 @@ void refreshUserJson(User* u) {
             {"book",u->getDiscount(book)},
             {"electronic",u->getDiscount(electronic)}
         };
-        std::cout<<user_json_list["Merchant"]<<std::endl;
     } else {
         uint64_t index;
         for(index = 0; index < user_json_list["Customer"].size(); index++) {

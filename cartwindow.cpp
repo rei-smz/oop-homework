@@ -2,6 +2,7 @@
 #include "ui_cartwindow.h"
 #include "management.h"
 #include "db.h"
+#include "bill.h"
 #include <QMessageBox>
 
 cartWindow::cartWindow(QWidget *parent) :
@@ -35,6 +36,9 @@ void cartWindow::on_delButton_clicked()
     current_user->delCart(item);
     refreshUserJson(current_user);
     refresh_cart();
+    QMessageBox* msg;
+    msg = new QMessageBox(QMessageBox::Information,"成功","已删除该商品",QMessageBox::Ok|QMessageBox::Default);
+    msg->show();
 }
 
 void cartWindow::on_purchaseButton_clicked()
@@ -58,45 +62,66 @@ void cartWindow::on_purchaseButton_clicked()
         msg->show();
         return;
     }
+    bill *bill_window;
+    bill_window = new bill;
+    QLabel *info = bill_window->findChild<QLabel *>("label");
     if(item.amount <= goods_list[item.pnu]->getRemain()) {
-        if(item.amount * goods_list[item.pnu]->getPrice() <= current_user->getBalance()) {
-            current_user->pay(item.amount * goods_list[item.pnu]->getPrice());
-            id_to_user[item.pnu.second]->recharge(item.amount * goods_list[item.pnu]->getPrice());
-            goods_list[item.pnu]->changeRemain(goods_list[item.pnu]->getRemain() - item.amount);
-            current_user->delCart(item);
-            refreshUserJson(current_user);
-            refreshUserJson(id_to_user[item.pnu.second]);
-            changeGoods(item.pnu.first,item.pnu.second);
-            emit sendPayOk();
-            refresh_cart();
-            QMessageBox* msg;
-            msg = new QMessageBox(QMessageBox::Information,"成功","购买成功",QMessageBox::Ok|QMessageBox::Default);
-            msg->show();
+        info->setText(QString("您的订单如下：\n") + QString::fromStdString(item.pnu.first) + QString("\n共%1件").arg(item.amount));
+        goods_list[item.pnu]->changeRemain(goods_list[item.pnu]->getRemain() - item.amount);
+        if(bill_window->exec() == QDialog::Accepted) {
+            if(item.amount * goods_list[item.pnu]->getPrice() <= current_user->getBalance()) {
+                current_user->pay(item.amount * goods_list[item.pnu]->getPrice());
+                id_to_user[item.pnu.second]->recharge(item.amount * goods_list[item.pnu]->getPrice());
+                current_user->delCart(item);
+                refreshUserJson(current_user);
+                refreshUserJson(id_to_user[item.pnu.second]);
+                changeGoods(item.pnu.first,item.pnu.second);
+                emit sendPayOk();
+                refresh_cart();
+                QMessageBox* msg;
+                msg = new QMessageBox(QMessageBox::Information,"成功","购买成功",QMessageBox::Ok|QMessageBox::Default);
+                msg->show();
+            } else {
+                goods_list[item.pnu]->changeRemain(goods_list[item.pnu]->getRemain() + item.amount);
+                QMessageBox* msg;
+                msg = new QMessageBox(QMessageBox::Critical,"错误","余额不足",QMessageBox::Ok|QMessageBox::Default);
+                msg->show();
+            }
         } else {
+            goods_list[item.pnu]->changeRemain(goods_list[item.pnu]->getRemain() + item.amount);
             QMessageBox* msg;
-            msg = new QMessageBox(QMessageBox::Critical,"错误","余额不足",QMessageBox::Ok|QMessageBox::Default);
+            msg = new QMessageBox(QMessageBox::Information,"提示","订单已取消",QMessageBox::Ok|QMessageBox::Default);
             msg->show();
         }
     } else {
         uint64_t t_amount = item.amount;
         item.amount = goods_list[item.pnu]->getRemain();
-        if(item.amount * goods_list[item.pnu]->getPrice() <= current_user->getBalance()) {
-            current_user->pay(item.amount * goods_list[item.pnu]->getPrice());
-            id_to_user[item.pnu.second]->recharge(item.amount * goods_list[item.pnu]->getPrice());
-            item.amount = t_amount - item.amount;
-            goods_list[item.pnu]->changeRemain(0);
-            current_user->changeCart(item);
-            refreshUserJson(current_user);
-            refreshUserJson(id_to_user[item.pnu.second]);
-            changeGoods(item.pnu.first,item.pnu.second);
-            emit sendPayOk();
-            refresh_cart();
-            QMessageBox* msg;
-            msg = new QMessageBox(QMessageBox::Information,"成功","选定商品的数量超过该商品的余量，已为您购买最大可购买数量",QMessageBox::Ok|QMessageBox::Default);
-            msg->show();
+        info->setText(QString("您的订单如下：\n") + QString::fromStdString(item.pnu.first) + QString("\n共%1件").arg(item.amount));
+        goods_list[item.pnu]->changeRemain(0);
+        if(bill_window->exec() == QDialog::Accepted) {
+            if(item.amount * goods_list[item.pnu]->getPrice() <= current_user->getBalance()) {
+                current_user->pay(item.amount * goods_list[item.pnu]->getPrice());
+                id_to_user[item.pnu.second]->recharge(item.amount * goods_list[item.pnu]->getPrice());
+                item.amount = t_amount - item.amount;
+                current_user->changeCart(item);
+                refreshUserJson(current_user);
+                refreshUserJson(id_to_user[item.pnu.second]);
+                changeGoods(item.pnu.first,item.pnu.second);
+                emit sendPayOk();
+                refresh_cart();
+                QMessageBox* msg;
+                msg = new QMessageBox(QMessageBox::Information,"成功","选定商品的数量超过该商品的余量，已为您购买最大可购买数量",QMessageBox::Ok|QMessageBox::Default);
+                msg->show();
+            } else {
+                goods_list[item.pnu]->changeRemain(item.amount);
+                QMessageBox* msg;
+                msg = new QMessageBox(QMessageBox::Critical,"错误","余额不足",QMessageBox::Ok|QMessageBox::Default);
+                msg->show();
+            }
         } else {
+            goods_list[item.pnu]->changeRemain(item.amount);
             QMessageBox* msg;
-            msg = new QMessageBox(QMessageBox::Critical,"错误","余额不足",QMessageBox::Ok|QMessageBox::Default);
+            msg = new QMessageBox(QMessageBox::Information,"提示","订单已取消",QMessageBox::Ok|QMessageBox::Default);
             msg->show();
         }
     }
@@ -141,4 +166,34 @@ void cartWindow::refresh_cart() {
 
 void cartWindow::closeWindow() {
     this->close();
+}
+
+void cartWindow::on_changeButton_clicked()
+{
+    if(!current_user||current_user->getUserType()!=customer) {
+        return;
+    }
+    int64_t row_index = ui->tableWidget->currentRow();
+    if(row_index == -1) {
+        QMessageBox* msg;
+        msg = new QMessageBox(QMessageBox::Critical,"错误","未选中商品",QMessageBox::Ok|QMessageBox::Default);
+        msg->show();
+        return;
+    }
+    cartObj item;
+    bool success;
+    item.pnu=std::pair<std::string,uint64_t>(ui->tableWidget->item(row_index,0)->text().toStdString(),user_list[ui->tableWidget->item(row_index,3)->text().toStdString()]->getUserId());
+    item.amount = ui->lineEdit->text().toULongLong(&success);
+    if(!success||item.amount<=0||item.amount>goods_list[item.pnu]->getRemain()) {
+        QMessageBox* msg;
+        msg = new QMessageBox(QMessageBox::Critical,"错误","输入的数量不合法",QMessageBox::Ok|QMessageBox::Default);
+        msg->show();
+        return;
+    }
+    current_user->changeCart(item);
+    refreshUserJson(current_user);
+    refresh_cart();
+    QMessageBox* msg;
+    msg = new QMessageBox(QMessageBox::Information,"成功","商品数量已修改",QMessageBox::Ok|QMessageBox::Default);
+    msg->show();
 }

@@ -203,14 +203,14 @@ void MainWindow::on_addCartButton_clicked()
     }
     bool amount_ok;
     uint64_t amount = ui->amountLine->text().toULongLong(&amount_ok);
-    if(!amount_ok||amount<=0) {
+    cartObj item;
+    item.pnu=std::pair<std::string,uint64_t>(ui->tableWidget->item(row_index,0)->text().toStdString(),user_list[ui->tableWidget->item(row_index,5)->text().toStdString()]->getUserId());
+    if(!amount_ok||amount<=0||amount>goods_list[item.pnu]->getRemain()) {
         QMessageBox* msg;
         msg = new QMessageBox(QMessageBox::Critical,"错误","输入的数量不合法",QMessageBox::Ok|QMessageBox::Default);
         msg->show();
         return;
     }
-    cartObj item;
-    item.pnu=std::pair<std::string,uint64_t>(ui->tableWidget->item(row_index,0)->text().toStdString(),user_list[ui->tableWidget->item(row_index,5)->text().toStdString()]->getUserId());
     item.amount=amount;
     current_user->addCart(item);
     refreshUserJson(current_user);

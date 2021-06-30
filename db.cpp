@@ -34,10 +34,6 @@ void deleteGoods(const std::string& g_name,uint64_t uid) {
     query.exec(QString("update goods set id = id - 1 where id > %1").arg(index));
 }
 
-void findGoodsByType() {
-
-}
-
 void loadGoods() {
     query.exec(QString("select * from goods where id < %1").arg(id));
     while (query.next()) {

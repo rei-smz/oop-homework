@@ -30,16 +30,16 @@ protected:
     uint64_t belong_to;
 public:
     virtual double getPrice()=0;
-    inline goods_type_t getType() {
+    inline goods_type_t getType() const {
         return goods_type;
     }
-    inline std::string getName() {
+    inline std::string getName() const {
         return goods_name;
     }
-    inline std::string getDesc() {
+    inline std::string getDesc() const {
         return description;
     }
-    inline uint64_t getRemain() {
+    inline uint64_t getRemain() const {
         return remain;
     }
     inline void changeOriginPrice(double new_price) {
@@ -48,10 +48,10 @@ public:
     inline void changeRemain(int64_t new_remain) {
         remain=new_remain;
     }
-    inline uint64_t getBelong() {
+    inline uint64_t getBelong() const {
         return belong_to;
     }
-    inline double getOriginPrice() {
+    inline double getOriginPrice() const {
         return origin_price;
     }
 };
@@ -102,13 +102,13 @@ public:
     double getBalance();
     virtual void pay(double money)=0;
     void changePassword(const std::string& old_pass,const std::string& new_pass);
-    inline std::string getUserName() {
+    inline std::string getUserName() const {
         return username;
     }
-    inline std::string getUserPass() {
+    inline std::string getUserPass() const {
         return password;
     }
-    inline uint64_t getUserId() {
+    inline uint64_t getUserId() const {
         return user_id;
     }
 };

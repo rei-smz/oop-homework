@@ -15,6 +15,7 @@ include(conanbuildinfo.pri)
 SOURCES += \
     account.cpp \
     addgoods.cpp \
+    bill.cpp \
     cartwindow.cpp \
     changepass.cpp \
     db.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
 HEADERS += \
     account.h \
     addgoods.h \
+    bill.h \
     cartwindow.h \
     changepass.h \
     mainwindow.h \
@@ -40,6 +42,7 @@ HEADERS += \
 FORMS += \
     account.ui \
     addgoods.ui \
+    bill.ui \
     cartwindow.ui \
     changepass.ui \
     mainwindow.ui \
@@ -53,3 +56,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 DISTFILES += \
     conanfile.txt
+
+RESOURCES +=

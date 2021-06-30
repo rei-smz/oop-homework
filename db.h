@@ -12,6 +12,5 @@ extern int64_t id;
 void insertGoods();
 void changeGoods(const std::string& g_name,uint64_t uid);
 void deleteGoods(const std::string& g_name,uint64_t uid);
-void findGoodsByType();
 void loadGoods();
 #endif //ACCOUNT_AND_GOODS_CLI_DB_H
